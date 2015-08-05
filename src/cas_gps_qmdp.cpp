@@ -33,9 +33,12 @@
 const int number_sample = 17; 
 const int state_size = 6; 
 double sigma_sample[number_sample][state_size];
+double sigma_sample_prob[number_sample];
 double prob_belief[number_sample];
 
-double mean_state[2][state_size];
+// double mean_state[2][state_size];
+double mean_state[state_size];
+double mean_state_cov[state_size];
 
 float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo;
 float dt = 0.01; //Based on the frequency of publishing data on the IMU topic.
@@ -47,8 +50,6 @@ ros::Subscriber own_vel_sub, intruder_vel_sub;
 ros::Publisher set_pt_vel_pub, set_pt_vel_pub_1, set_pt_vel_pub_2;
 
 //Callback from intruder SLAM pose estimate.
-
-
 
 
 
@@ -221,42 +222,88 @@ void set_velocity_ownship(float vx, float vy, float yaw)
 // The states coming from the autopilot will not be these, I'll need to calculate at least
 // the ranges and perhaps some others in this function.
 
+void get_probability_belief()
+  { //Read the covariance value. 
+      double cov_determinant=1; 
+      double normalization, exponent;
+      
+      for (int i=0; i<state_size; i++)
+        cov_determinant *= mean_state_cov[state_size];
+
+      normalization = (pow(pow(6.28,state_size) * cov_determinant, 0.5));
+      sigma_sample_prob[0] = 1 / normalization; 
+
+      for (int i=1; i<number_sample; i++)
+        sigma_sample_prob[i] = exp(-(1/2)) / normalization;  
+  }
 
 void update_sample_points()
   { 
     // States are [rx, ry, vxo, vyo, vxi, vyi, dx, dy]
-    mean_state[0][0] = xi-xo;
-    mean_state[1][0] = ;//cov of rx
     
-    mean_state[0][1] = yi-yo;
-    mean_state[1][1] = ;//cov of ry;
 
-    mean_state[0][2] = vxo; 
-    mean_state[1][2] = vxo_cov; 
+    // mean_state[0][0] = xi-xo;
+    // mean_state[1][0] = ;//cov of rx
+    
+    // mean_state[0][1] = yi-yo;
+    // mean_state[1][1] = ;//cov of ry;
 
-    mean_state[0][3] = vyo; 
-    mean_state[1][3] = vyo_cov; 
+    // mean_state[0][2] = vxo; 
+    // mean_state[1][2] = vxo_cov; 
 
-    mean_state[0][4] = vxi; 
-    mean_state[1][4] = vxi_cov; 
+    // mean_state[0][3] = vyo; 
+    // mean_state[1][3] = vyo_cov; 
 
-    mean_state[0][5] = vyi; 
-    mean_state[1][5] = vyi_cov; 
+    // mean_state[0][4] = vxi; 
+    // mean_state[1][4] = vxi_cov; 
+
+    // mean_state[0][5] = vyi; 
+    // mean_state[1][5] = vyi_cov; 
+
+
+
+    mean_state[0] = xi-xo;
+    mean_state[1] = yi-yo;
+    mean_state[2] = vxo; 
+    mean_state[3] = vyo; 
+    mean_state[4] = vxi; 
+    mean_state[5] = vyi; 
+    
+    mean_state_cov[0] = xi-xo;
+    mean_state_cov[1] = yi-yo;
+    mean_state_cov[2] = vxo; 
+    mean_state_cov[3] = vyo; 
+    mean_state_cov[4] = vxi; 
+    mean_state_cov[5] = vyi; 
+
 
      // mean_state[]
 
+    // for (int i=0; i<number_sample; i++)
+    //   { for (int j=0; j<state_size; j++)
+    //       { sigma_sample[i][j] = mean_state[0][j];
+    //       }
+    //   }
+
     for (int i=0; i<number_sample; i++)
       { for (int j=0; j<state_size; j++)
-          { sigma_sample[i][j] = mean_state[0][j];
+          { sigma_sample[i][j] = mean_state[j];
           }
       }
 
     for (int i=0; i<state_size; i++)
-      { 
-        // sigma_sample[i][0] = mean_state[0][j] + //Formula for standard deviation/
-        sigma_sample[2*i+1][i] = mean_state[0][i] + mean_state[1][i];//stand dev
-        sigma_sample[2*i+2][i] = mean_state[0][i] - mean_state[1][i];//stand dev
+      {       
+        sigma_sample[0][i] = mean_state[i];
+        sigma_sample[2*i+1][i] = mean_state[i] + mean_state_cov[i]; //stand dev
+        sigma_sample[2*i+2][i] = mean_state[i] - mean_state_cov[i];//stand dev
       }
+
+    // for (int i=0; i<state_size; i++)
+    //   {       
+    //     sigma_sample[0][i] = mean_state[0][i];
+    //     sigma_sample[2*i+1][i] = mean_state[0][i] + mean_state[1][i]; //stand dev
+    //     sigma_sample[2*i+2][i] = mean_state[0][i] - mean_state[1][i];//stand dev
+    //   }
   }
 
 
