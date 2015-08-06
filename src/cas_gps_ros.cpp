@@ -114,8 +114,8 @@ void gps_intruder_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& intr
 { 
     // nav_msgs::Odometry intruder_pose = *intruder_pose_var;
     geometry_msgs::PoseStamped intruder_pose = *intruder_pose_var;
-    xi = intruder_pose.pose.position.x;
-    yi = intruder_pose.pose.position.y;
+    xi = intruder_pose.pose.position.x / STATESCALE;
+    yi = intruder_pose.pose.position.y / STATESCALE;
 }
 
 //Callback from intruder IMU velocity estimate.
@@ -129,8 +129,8 @@ void gps_intruder_vel_callback(const geometry_msgs::Vector3Stamped::ConstPtr& in
     // vxi += intruder_acc.linear_acceleration.x * dt;
     // vyi += intruder_acc.linear_acceleration.y * dt;
 
-    vyi = intruder_vel.vector.y;
-    vxi = intruder_vel.vector.x;
+    vyi = intruder_vel.vector.y / STATESCALE;
+    vxi = intruder_vel.vector.x / STATESCALE;
 }
 
 //Callback from ownship SLAM pose estimate.
@@ -141,8 +141,8 @@ void gps_own_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& own_pose_
     // xo = own_pose.pose.pose.position.x;
 
     geometry_msgs::PoseStamped own_pose = *own_pose_var;
-    xo = own_pose.pose.position.x;
-    yo = own_pose.pose.position.y;
+    xo = own_pose.pose.position.x / STATESCALE;
+    yo = own_pose.pose.position.y / STATESCALE;
 }
 
 // void gps_own_pose_demo_callback(const geometry_msgs::Vector3::ConstPtr& dummy_pose)
@@ -170,8 +170,8 @@ void gps_own_vel_callback(const geometry_msgs::Vector3Stamped::ConstPtr& own_acc
     // vxi += intruder_acc.linear_acceleration.x * dt;
     // vyi += intruder_acc.linear_acceleration.y * dt;
 
-  vyo = own_vel.vector.y;
-  vxo = own_vel.vector.x;
+  vyo = own_vel.vector.y / STATESCALE;
+  vxo = own_vel.vector.x / STATESCALE;
 
   // std::cout<<""
    

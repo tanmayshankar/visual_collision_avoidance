@@ -115,7 +115,7 @@ ros::Publisher set_pt_vel_pub, set_pt_vel_pub_1, set_pt_vel_pub_2;
 
 
 
-
+// States are [rx, ry, vxo, vyo, vxi, vyi, dx, dy]
 
 // void gps_intruder_pose_callback(const nav_msgs::Odometry::ConstPtr& intruder_pose_var)
 void gps_intruder_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& intruder_pose_var)
@@ -124,6 +124,8 @@ void gps_intruder_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& intr
     geometry_msgs::PoseStamped intruder_pose = *intruder_pose_var;
     xi = intruder_pose.pose.position.x;
     yi = intruder_pose.pose.position.y;
+
+    // mean_state[]
 }
 
 //Callback from intruder IMU velocity estimate.
@@ -139,6 +141,9 @@ void gps_intruder_vel_callback(const geometry_msgs::Vector3Stamped::ConstPtr& in
 
     vyi = intruder_vel.vector.y;
     vxi = intruder_vel.vector.x;
+
+    mean_state[4] = vxi; 
+    mean_state[5] = vyi; 
 }
 
 //Callback from ownship SLAM pose estimate.
@@ -181,6 +186,8 @@ void gps_own_vel_callback(const geometry_msgs::Vector3Stamped::ConstPtr& own_acc
   vyo = own_vel.vector.y;
   vxo = own_vel.vector.x;
 
+  mean_state[2] = vxo; 
+  mean_state[3] = vyo; 
   // std::cout<<""
    
 }
@@ -241,27 +248,6 @@ void update_sample_points()
   { 
     // States are [rx, ry, vxo, vyo, vxi, vyi, dx, dy]
     
-
-    // mean_state[0][0] = xi-xo;
-    // mean_state[1][0] = ;//cov of rx
-    
-    // mean_state[0][1] = yi-yo;
-    // mean_state[1][1] = ;//cov of ry;
-
-    // mean_state[0][2] = vxo; 
-    // mean_state[1][2] = vxo_cov; 
-
-    // mean_state[0][3] = vyo; 
-    // mean_state[1][3] = vyo_cov; 
-
-    // mean_state[0][4] = vxi; 
-    // mean_state[1][4] = vxi_cov; 
-
-    // mean_state[0][5] = vyi; 
-    // mean_state[1][5] = vyi_cov; 
-
-
-
     mean_state[0] = xi-xo;
     mean_state[1] = yi-yo;
     mean_state[2] = vxo; 
