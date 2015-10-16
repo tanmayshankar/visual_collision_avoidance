@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "interpolate.h"
+#include <sys/stat.h>
 
 // #include "autopilot_setup.h"
 
@@ -14,11 +15,11 @@
 #define SIMSTATERAND 0    // If != 0, returns random states upon calls to readState() (must be in 
                           // READSTATELOCATION==0 mode). For debugging.  Random states are within
                           // + or - SIMSTATERAND
-#define NOMINAL_VX -2.5
+#define NOMINAL_VX -1.0   // Was originally -2.5, but I want to make sure it's consistent with my policy
 #define NOMINAL_VY  0.0
 
-#define STATESCALE 0.2    // Factor by which to scale all states and actions
-#define VMAX  1.0          // Maximum absolute allowable horizontal velocity
+#define STATESCALE 0.5    // Factor by which to scale all states and actions.  Was originally 0.2 when Vx_nom was -2.5
+#define VMAX  1.5         // Maximum absolute allowable horizontal velocity
 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
@@ -30,7 +31,7 @@
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
 
-float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo;
+float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo, xt, yt;   // xt and yt are the absolute locations of the desired trajectory point
 float dt = 0.01; //Based on the frequency of publishing data on the IMU topic.
 
 //Defining ROS subscribers to retrieve data. 
@@ -218,7 +219,7 @@ int readState(double *currentState, int numDims, double timeNow)
 {
     // Read from MAVLink/autopilot
     if (READSTATELOCATION == 2)
-        {   if ( not numDims==6 )
+        {   if ( not numDims==8 )
 	             {   printf("ERROR: numDims not 6, is %i",numDims);
 	    	           throw 1;
                }
@@ -243,6 +244,8 @@ int readState(double *currentState, int numDims, double timeNow)
 		        currentState[3] = (double) vyo;     // vyo
 		        currentState[4] = (double) vxi;     // vxi
 		        currentState[5] = (double) vyi;     // vyi
+            currentState[6] = (double) (xt-xo);      // dx
+            currentState[7] = (double) (yt-yo);      // dy
 
 		        printf("\n");
       }
@@ -295,6 +298,10 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
   vx_cmd = (currentState[2]+ax*dt);
   vy_cmd = (currentState[3]+ay*dt);
 
+  // Update nominal desired trajectory
+  xt += NOMINAL_VX*dt;
+  yt += NOMINAL_VY*dt;
+
   // Log the scaled commands (what the algorithm sees):
   fprintf(fpOut, "%d, %lf, %lf, ", actionInd, vx_cmd, vy_cmd);
 
@@ -322,6 +329,11 @@ int writeNominalAction(FILE *fpOut)
     // Send nominal position command (non-scaled)
     float vx=NOMINAL_VX, vy=NOMINAL_VY;
     float yaw = 180.;
+
+    // Probably not necessary to do this since it's not being used for nominal actions, 
+    // but I'm going to do it so we don't end up with some huge error.
+    xt = xo;
+    yt = yo;
 
     set_velocity_ownship( vx, vy, yaw );
     printf("NOMINAL U-V-Psi  [ % .4f , % .4f , % .4f]\n\n", vx, vy, yaw);
@@ -380,6 +392,8 @@ int main(int argc, char **argv)
 	    yi=0;
 	    yo=0;
 	    xo=0;
+      xt=0;
+      yt=0;
 
 		  std::cerr<<"MY god"<<std::endl;
       // ros::nodeHandler
@@ -412,6 +426,13 @@ int main(int argc, char **argv)
       double *neighY;
       double **discMat, **neighX;
       struct cd_grid **gridQsa;  // This should hold a vector of grids, one for each action
+      struct stat st = {0};
+      struct tm *t;
+      time_t t;
+      char str_time[100]
+      char log_destination[150]
+      char results_destination[150]
+
 
       // Variables simply used in the algorithm functions, may be redeclared in each function:
       int i, j, k;
@@ -432,8 +453,19 @@ int main(int argc, char **argv)
       // fpData  = fopen("data.txt","r");
       // fpIn  = fopen("param8Dim141201.txt","r");
       // fpData  = fopen("data8Dim141201.txt","r");
-      fpOut = fopen("CA2_results.out","w");
-      fpLog = fopen("CA2_results.log","w");
+      if (stat("logs", &st) == -1)
+        mkdir("logs", 0777);
+      t = time(NULL);
+      tm = localtime(&t);
+      strftime(str_time, sizeof(str_time), "%H %M %S",tm);
+      strcpy(results_destination,"/logs/CA2_results_")
+      strcat(results_destination,str_time)
+      strcat(results_destination,".out")
+      fpOut = fopen(results_destination,"w");
+      strcpy(log_destination,"/logs/CA2_results_")
+      strcat(log_destination,str_time)
+      strcat(log_destination,".log")
+      fpLog = fopen(log_destination,"w");
 
       /* Check for errors opening files */
       if (fpIn == NULL) 
@@ -611,8 +643,11 @@ int main(int argc, char **argv)
 		    // ros::spin();
 
       // if ((nh_.ok())&&(!exitCondition))
+      int NOMINAL_MODE_LAST
+      NOMINAL_MODE_LAST = 1
       while (!exitCondition)
         {           
+
         // while ((!exitCondition)&&(nh_.ok()))
              // read the current state from MAVLink (or a file, for now)
               err = readState(currentState, numDims, (double)stepCounter);
@@ -671,9 +706,21 @@ int main(int argc, char **argv)
 
               // write the action to MAVLink (or a file, for now)
               if (intruderThreat(currentState)) 
+              {
                   err = writeCAAction(bestActionInd, currentState, numDims, fpOut); 
+                  if NOMINAL_MODE_LAST
+                  {
+                    // We were just in nominal mode, so record the current position as the start of the desired trajectory
+                    xt = xo;
+                    yt = yo;
+                    NOMINAL_MODE_LAST = 0;
+                  }
+              }
               else
+              {
                   err = writeNominalAction(fpOut);
+                  NOMINAL_MODE_LAST = 1;
+              }
   
               // log the current state and action to a log file
               err = writeLogs(fpLog, stepCounter, currentState, numDims, bestActionInd);
