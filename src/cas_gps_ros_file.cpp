@@ -446,7 +446,7 @@ int main(int argc, char **argv)
       // fpData  = fopen("CA2_data.dat","r");
 
       fpIn = fopen(argv[1],"r");
-      fpIn = fopen(argv[2],"r");
+      fpData = fopen(argv[2],"r");
       // fpIn  = fopen("paramtemp.txt","r");
       // fpData  = fopen("datatemp.txt","r");
       // fpIn  = fopen("test.txt","r");
