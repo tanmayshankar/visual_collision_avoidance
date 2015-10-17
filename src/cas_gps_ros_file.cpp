@@ -457,7 +457,7 @@ int main(int argc, char **argv)
         mkdir("logs", 0777);
       timeVar = time(NULL);
       t = localtime(&timeVar);
-      strftime(str_time, sizeof(str_time), "%H %M %S",tm);
+      strftime(str_time, sizeof(str_time), "%H%M%S",t);
       strcpy(results_destination,"/logs/CA2_results_");
       strcat(results_destination,str_time);
       strcat(results_destination,".out");
@@ -708,7 +708,7 @@ int main(int argc, char **argv)
               if (intruderThreat(currentState)) 
               {
                   err = writeCAAction(bestActionInd, currentState, numDims, fpOut); 
-                  if NOMINAL_MODE_LAST
+                  if (NOMINAL_MODE_LAST)
                   {
                     // We were just in nominal mode, so record the current position as the start of the desired trajectory
                     xt = xo;
