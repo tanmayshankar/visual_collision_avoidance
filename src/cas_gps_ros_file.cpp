@@ -466,7 +466,7 @@ int main(int argc, char **argv)
       strcat(log_destination,str_time);
       strcat(log_destination,".log");
       fpLog = fopen(log_destination,"w");
-
+      printf("Output file name: %s", results_destination)
       /* Check for errors opening files */
       if (fpIn == NULL) 
         { fprintf(stderr, "Can't open input file param\n");
