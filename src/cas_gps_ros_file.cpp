@@ -428,10 +428,10 @@ int main(int argc, char **argv)
       struct cd_grid **gridQsa;  // This should hold a vector of grids, one for each action
       struct stat st = {0};
       struct tm *t;
-      time_t t;
-      char str_time[100]
-      char log_destination[150]
-      char results_destination[150]
+      time_t timeVar;
+      char str_time[100];
+      char log_destination[150];
+      char results_destination[150];
 
 
       // Variables simply used in the algorithm functions, may be redeclared in each function:
@@ -455,16 +455,16 @@ int main(int argc, char **argv)
       // fpData  = fopen("data8Dim141201.txt","r");
       if (stat("logs", &st) == -1)
         mkdir("logs", 0777);
-      t = time(NULL);
-      tm = localtime(&t);
+      timeVar = time(NULL);
+      t = localtime(&timeVar);
       strftime(str_time, sizeof(str_time), "%H %M %S",tm);
-      strcpy(results_destination,"/logs/CA2_results_")
-      strcat(results_destination,str_time)
-      strcat(results_destination,".out")
+      strcpy(results_destination,"/logs/CA2_results_");
+      strcat(results_destination,str_time);
+      strcat(results_destination,".out");
       fpOut = fopen(results_destination,"w");
-      strcpy(log_destination,"/logs/CA2_results_")
-      strcat(log_destination,str_time)
-      strcat(log_destination,".log")
+      strcpy(log_destination,"/logs/CA2_results_");
+      strcat(log_destination,str_time);
+      strcat(log_destination,".log");
       fpLog = fopen(log_destination,"w");
 
       /* Check for errors opening files */
@@ -643,8 +643,8 @@ int main(int argc, char **argv)
 		    // ros::spin();
 
       // if ((nh_.ok())&&(!exitCondition))
-      int NOMINAL_MODE_LAST
-      NOMINAL_MODE_LAST = 1
+      int NOMINAL_MODE_LAST;
+      NOMINAL_MODE_LAST = 1;
       while (!exitCondition)
         {           
 
