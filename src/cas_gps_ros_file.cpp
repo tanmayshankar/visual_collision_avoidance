@@ -769,7 +769,7 @@ int main(int argc, char **argv)
               else
                 exitCondition = 1;
 
-              sleep(dt)
+              sleep(dt);
         }
 
       free(currentState);
