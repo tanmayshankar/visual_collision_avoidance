@@ -466,7 +466,7 @@ int main(int argc, char **argv)
       strcat(log_destination,str_time);
       strcat(log_destination,".log");
       fpLog = fopen(log_destination,"w");
-      printf("Output file name: %s", results_destination);
+      //printf("Output file name: %s", results_destination);
       /* Check for errors opening files */
       if (fpIn == NULL) 
         { fprintf(stderr, "Can't open input file param\n");
@@ -476,14 +476,15 @@ int main(int argc, char **argv)
         { fprintf(stderr, "Can't open data file data\n");
           exit(1);
         }
-      if (fpOut == NULL) 
-        { fprintf(stderr, "Can't open output file results out\n");
-          exit(1);
-        }
       if (fpLog == NULL) 
-        { fprintf(stderr, "Can't open log file\n");
+        { fprintf(stderr, "Can't open log file: %s\n", log_destination);
           exit(1);
         }
+      if (fpOut == NULL) 
+        { fprintf(stderr, "Can't open output file results out: %s\n", results_destination);
+          exit(1);
+        }
+      
 
       /* Read in parameter file */
 
