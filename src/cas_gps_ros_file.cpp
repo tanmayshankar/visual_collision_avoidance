@@ -266,6 +266,15 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 {   double ax, ay;
     double vx_cmd, vy_cmd;
     double dt;
+    struct tm *t;
+    time_t timeVar;
+    char str_time[10];
+
+    timeVar = time(NULL);
+    t = localtime(&timeVar);
+    strftime(str_time, sizeof(str_time), "%H%M%S",t);
+
+    fprintf(fpOut, "%s: ",str_time)
 
     dt = 1;
 
@@ -330,6 +339,7 @@ int writeNominalAction(FILE *fpOut)
     float vx=NOMINAL_VX, vy=NOMINAL_VY;
     float yaw = 180.;
 
+
     // Probably not necessary to do this since it's not being used for nominal actions, 
     // but I'm going to do it so we don't end up with some huge error.
     xt = xo;
@@ -364,14 +374,28 @@ int intruderThreat(double *currentState)
 int writeLogs(FILE *fpLog, int stepCounter, double* currentState, int numDims, int actionInd)
 {
     int i;
+    struct tm *t;
+    time_t timeVar;
+    char str_time[10];
+
+    timeVar = time(NULL);
+    t = localtime(&timeVar);
+    strftime(str_time, sizeof(str_time), "%H%M%S",t);
+
+    fprintf(fpLog, "%s: ",str_time)
+
     fprintf(fpLog, "%d, ", stepCounter);
     fprintf(fpLog, "%d, ", actionInd);
-    
+
     for (i=0; i<numDims-1; i++) 
       {   fprintf(fpLog, "%lf, ", currentState[i]);
       }   
+      fprintf(fpLog, "%lf, ", currentState[numDims-1]);
 
-    fprintf(fpLog, "%lf\n", currentState[numDims-1]);
+      // Also write the absolute positions
+    fprintf(fpLog, "%lf, %lf, %lf, %lf, %lf, %lf\n", xi, yi, xo, yo, xt, yt)
+
+    
 
     return 0;
 }
@@ -458,11 +482,11 @@ int main(int argc, char **argv)
       timeVar = time(NULL);
       t = localtime(&timeVar);
       strftime(str_time, sizeof(str_time), "%H%M%S",t);
-      strcpy(results_destination,"/logs/CA2_results_");
+      strcpy(results_destination,"./logs/CA2_results_");
       strcat(results_destination,str_time);
       strcat(results_destination,".out");
       fpOut = fopen(results_destination,"w");
-      strcpy(log_destination,"/logs/CA2_results_");
+      strcpy(log_destination,"./logs/CA2_results_");
       strcat(log_destination,str_time);
       strcat(log_destination,".log");
       fpLog = fopen(log_destination,"w");
