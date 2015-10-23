@@ -274,7 +274,7 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
     t = localtime(&timeVar);
     strftime(str_time, sizeof(str_time), "%H%M%S",t);
 
-    fprintf(fpOut, "%s: ",str_time)
+    fprintf(fpOut, "%s: ",str_time);
 
     dt = 1;
 
@@ -382,7 +382,7 @@ int writeLogs(FILE *fpLog, int stepCounter, double* currentState, int numDims, i
     t = localtime(&timeVar);
     strftime(str_time, sizeof(str_time), "%H%M%S",t);
 
-    fprintf(fpLog, "%s: ",str_time)
+    fprintf(fpLog, "%s: ",str_time);
 
     fprintf(fpLog, "%d, ", stepCounter);
     fprintf(fpLog, "%d, ", actionInd);
@@ -393,7 +393,7 @@ int writeLogs(FILE *fpLog, int stepCounter, double* currentState, int numDims, i
       fprintf(fpLog, "%lf, ", currentState[numDims-1]);
 
       // Also write the absolute positions
-    fprintf(fpLog, "%lf, %lf, %lf, %lf, %lf, %lf\n", xi, yi, xo, yo, xt, yt)
+    fprintf(fpLog, "%lf, %lf, %lf, %lf, %lf, %lf\n", xi, yi, xo, yo, xt, yt);
 
     
 
