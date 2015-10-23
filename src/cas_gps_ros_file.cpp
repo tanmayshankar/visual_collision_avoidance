@@ -321,7 +321,7 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
   set_velocity_ownship( vx, vy, yaw );
 
   printf("AVOID U-V-Psi at %s   [ % .4f , % .4f, % .4f ]\nDesired Trajectory: [%lf, %lf]  Command: [%lf %lf]\n", str_time, vx, vy, yaw, xt, yt, ax, ay);
-
+  printf("xt = %lf, NOMINAL_VX = %lf, dt = %lf, vox = %lf, voy = %lf, rx = %lf, ry = %lf\n", xt, NOMINAL_VX, dt, currentState[2], currentState[3], currentState[0], currentState[1]);
   // Log the actual output (which is passed to the autopilot)
   fprintf(fpOut, "%lf, %lf\n", vx_cmd, vy_cmd);
   
