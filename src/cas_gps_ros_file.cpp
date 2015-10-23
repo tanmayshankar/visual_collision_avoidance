@@ -266,7 +266,7 @@ int readState(double *currentState, int numDims, double timeNow)
 int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 {   double ax, ay;
     double vx_cmd, vy_cmd;
-    double dt;
+    //double dt;
     struct tm *t;
     time_t timeVar;
     char str_time[10];
@@ -419,6 +419,7 @@ int main(int argc, char **argv)
 	    xo=0;
       xt=0;
       yt=0;
+      dt = 0.1;
 
 		  std::cerr<<"MY god"<<std::endl;
       // ros::nodeHandler
