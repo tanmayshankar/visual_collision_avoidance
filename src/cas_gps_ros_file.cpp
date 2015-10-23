@@ -320,7 +320,7 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 
   set_velocity_ownship( vx, vy, yaw );
 
-  printf("AVOID U-V-Psi    [ % .4f , % .4f, % .4f ]\n\n", vx, vy, yaw);
+  printf("AVOID U-V-Psi at %s   [ % .4f , % .4f, % .4f ]\n\n", str_Time, vx, vy, yaw);
 
   // Log the actual output (which is passed to the autopilot)
   fprintf(fpOut, "%lf, %lf\n", vx_cmd, vy_cmd);
@@ -769,7 +769,7 @@ int main(int argc, char **argv)
               else
                 exitCondition = 1;
 
-              sleep(dt);
+              usleep(1000000*dt);
         }
 
       free(currentState);
