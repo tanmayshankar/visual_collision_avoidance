@@ -11,7 +11,7 @@
 #define READSTATELOCATION 2   // 0 is a canned state, 1 is from a file, 2 is from MAVLink
 #define EXTRAPMODE 0      // Use 0 for the interpolation function to use nearest neighbor 
                           //  beyond the grid
-#define THREATRANGE 15    // Range in meters at which an intruder aircraft triggers calls to CA
+#define THREATRANGE 25    // Range in meters at which an intruder aircraft triggers calls to CA
 #define MAXSIMSTEPS 100    // If running in canned sim mode, stop after this number of time steps
 #define SIMSTATERAND 0    // If != 0, returns random states upon calls to readState() (must be in 
                           // READSTATELOCATION==0 mode). For debugging.  Random states are within
@@ -320,7 +320,7 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 
   set_velocity_ownship( vx, vy, yaw );
 
-  printf("AVOID U-V-Psi at %s   [ % .4f , % .4f, % .4f ]\n\n", str_time, vx, vy, yaw);
+  printf("AVOID U-V-Psi at %s   [ % .4f , % .4f, % .4f ]\nDesired Trajectory: [%lf, %lf]  Command: [%lf %lf]\n", str_time, vx, vy, yaw, xt, yt, ax, ay);
 
   // Log the actual output (which is passed to the autopilot)
   fprintf(fpOut, "%lf, %lf\n", vx_cmd, vy_cmd);
@@ -739,6 +739,7 @@ int main(int argc, char **argv)
                     // We were just in nominal mode, so record the current position as the start of the desired trajectory
                     xt = xo;
                     yt = yo;
+                    printf("Setting nominal trajectory start point: %lf %lf\n\n", xt, yt);
                     NOMINAL_MODE_LAST = 0;
                   }
               }
