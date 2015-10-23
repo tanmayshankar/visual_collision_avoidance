@@ -3,6 +3,7 @@
 #include <math.h>
 #include "interpolate.h"
 #include <sys/stat.h>
+#include <unistd.h>
 
 // #include "autopilot_setup.h"
 
@@ -32,7 +33,7 @@
 #include <nav_msgs/Odometry.h>
 
 float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo, xt, yt;   // xt and yt are the absolute locations of the desired trajectory point
-float dt = 0.01; //Based on the frequency of publishing data on the IMU topic.
+float dt = 0.1; //Based on the frequency of publishing data on the IMU topic.  Was 0.01, seems too fast
 
 //Defining ROS subscribers to retrieve data. 
 ros::Subscriber own_imu_sub, own_pose_sub, intruder_imu_sub, intruder_pose_sub;
@@ -276,7 +277,7 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 
     fprintf(fpOut, "%s: ",str_time);
 
-    dt = 1;
+    //dt = 1;  // this should be defined as a global at the top of this file
 
     switch (actionInd)
       {   case 0:   // Send command for zero acceleration
@@ -767,6 +768,8 @@ int main(int argc, char **argv)
                 // ros::spin();
               else
                 exitCondition = 1;
+
+              sleep(dt)
         }
 
       free(currentState);
