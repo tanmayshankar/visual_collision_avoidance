@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include "interpolate.h"
+#include <sys/stat.h>
+#include <unistd.h>
 
 // #include "autopilot_setup.h"
 
@@ -9,16 +11,16 @@
 #define READSTATELOCATION 2   // 0 is a canned state, 1 is from a file, 2 is from MAVLink
 #define EXTRAPMODE 0      // Use 0 for the interpolation function to use nearest neighbor 
                           //  beyond the grid
-#define THREATRANGE 15    // Range in meters at which an intruder aircraft triggers calls to CA
+#define THREATRANGE 25    // Range in meters at which an intruder aircraft triggers calls to CA
 #define MAXSIMSTEPS 100    // If running in canned sim mode, stop after this number of time steps
 #define SIMSTATERAND 0    // If != 0, returns random states upon calls to readState() (must be in 
                           // READSTATELOCATION==0 mode). For debugging.  Random states are within
                           // + or - SIMSTATERAND
-#define NOMINAL_VX -2.5
+#define NOMINAL_VX -1.0   // Was originally -2.5, but I want to make sure it's consistent with my policy
 #define NOMINAL_VY  0.0
 
-#define STATESCALE 0.2    // Factor by which to scale all states and actions
-#define VMAX  1.0          // Maximum absolute allowable horizontal velocity
+#define STATESCALE 0.5    // Factor by which to scale all states and actions.  Was originally 0.2 when Vx_nom was -2.5
+#define VMAX  1.5         // Maximum absolute allowable horizontal velocity
 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
@@ -30,8 +32,8 @@
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
 
-float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo;
-float dt = 0.01; //Based on the frequency of publishing data on the IMU topic.
+float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo, xt, yt;   // xt and yt are the absolute locations of the desired trajectory point
+float dt = 0.1; //Based on the frequency of publishing data on the IMU topic.  Was 0.01, seems too fast
 
 //Defining ROS subscribers to retrieve data. 
 ros::Subscriber own_imu_sub, own_pose_sub, intruder_imu_sub, intruder_pose_sub;
@@ -218,7 +220,7 @@ int readState(double *currentState, int numDims, double timeNow)
 {
     // Read from MAVLink/autopilot
     if (READSTATELOCATION == 2)
-        {   if ( not numDims==6 )
+        {   if ( not numDims==8 )
 	             {   printf("ERROR: numDims not 6, is %i",numDims);
 	    	           throw 1;
                }
@@ -243,6 +245,8 @@ int readState(double *currentState, int numDims, double timeNow)
 		        currentState[3] = (double) vyo;     // vyo
 		        currentState[4] = (double) vxi;     // vxi
 		        currentState[5] = (double) vyi;     // vyi
+            currentState[6] = (double) (xt-xo);      // dx
+            currentState[7] = (double) (yt-yo);      // dy
 
 		        printf("\n");
       }
@@ -262,9 +266,18 @@ int readState(double *currentState, int numDims, double timeNow)
 int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 {   double ax, ay;
     double vx_cmd, vy_cmd;
-    double dt;
+    //double dt;
+    struct tm *t;
+    time_t timeVar;
+    char str_time[10];
 
-    dt = 1;
+    timeVar = time(NULL);
+    t = localtime(&timeVar);
+    strftime(str_time, sizeof(str_time), "%H%M%S",t);
+
+    fprintf(fpOut, "%s: ",str_time);
+
+    //dt = 1;  // this should be defined as a global at the top of this file
 
     switch (actionInd)
       {   case 0:   // Send command for zero acceleration
@@ -295,6 +308,10 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
   vx_cmd = (currentState[2]+ax*dt);
   vy_cmd = (currentState[3]+ay*dt);
 
+  // Update nominal desired trajectory
+  xt += NOMINAL_VX*dt;
+  yt += NOMINAL_VY*dt;
+
   // Log the scaled commands (what the algorithm sees):
   fprintf(fpOut, "%d, %lf, %lf, ", actionInd, vx_cmd, vy_cmd);
 
@@ -303,8 +320,10 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 
   set_velocity_ownship( vx, vy, yaw );
 
-  printf("AVOID U-V-Psi    [ % .4f , % .4f, % .4f ]\n\n", vx, vy, yaw);
-
+  printf("AVOID U-V-Psi at %s   [ % .4f , % .4f, % .4f ]\nDesired Trajectory: [%lf, %lf]  Command: [%lf, %lf]\n", str_time, vx, vy, yaw, xt, yt, ax, ay);
+  printf("Own location = [%lf, %lf], Int. location = [%lf, %lf]\n", xo, yo, xi, yi);
+  printf("vox = %lf, voy = %lf, vix = %lf, viy = %lf\n", currentState[2], currentState[3], currentState[4], currentState[5]);
+  printf("rx = %lf, ry = %lf, dx = %lf, dy = %lf\n", currentState[0], currentState[1],  currentState[6], currentState[7]);
   // Log the actual output (which is passed to the autopilot)
   fprintf(fpOut, "%lf, %lf\n", vx_cmd, vy_cmd);
   
@@ -322,6 +341,12 @@ int writeNominalAction(FILE *fpOut)
     // Send nominal position command (non-scaled)
     float vx=NOMINAL_VX, vy=NOMINAL_VY;
     float yaw = 180.;
+
+
+    // Probably not necessary to do this since it's not being used for nominal actions, 
+    // but I'm going to do it so we don't end up with some huge error.
+    xt = xo;
+    yt = yo;
 
     set_velocity_ownship( vx, vy, yaw );
     printf("NOMINAL U-V-Psi  [ % .4f , % .4f , % .4f]\n\n", vx, vy, yaw);
@@ -352,14 +377,28 @@ int intruderThreat(double *currentState)
 int writeLogs(FILE *fpLog, int stepCounter, double* currentState, int numDims, int actionInd)
 {
     int i;
+    struct tm *t;
+    time_t timeVar;
+    char str_time[10];
+
+    timeVar = time(NULL);
+    t = localtime(&timeVar);
+    strftime(str_time, sizeof(str_time), "%H%M%S",t);
+
+    fprintf(fpLog, "%s: ",str_time);
+
     fprintf(fpLog, "%d, ", stepCounter);
     fprintf(fpLog, "%d, ", actionInd);
-    
+
     for (i=0; i<numDims-1; i++) 
       {   fprintf(fpLog, "%lf, ", currentState[i]);
       }   
+      fprintf(fpLog, "%lf, ", currentState[numDims-1]);
 
-    fprintf(fpLog, "%lf\n", currentState[numDims-1]);
+      // Also write the absolute positions
+    fprintf(fpLog, "%lf, %lf, %lf, %lf, %lf, %lf\n", xi, yi, xo, yo, xt, yt);
+
+    
 
     return 0;
 }
@@ -380,6 +419,9 @@ int main(int argc, char **argv)
 	    yi=0;
 	    yo=0;
 	    xo=0;
+      xt=0;
+      yt=0;
+      dt = 0.1;
 
 		  std::cerr<<"MY god"<<std::endl;
       // ros::nodeHandler
@@ -412,6 +454,13 @@ int main(int argc, char **argv)
       double *neighY;
       double **discMat, **neighX;
       struct cd_grid **gridQsa;  // This should hold a vector of grids, one for each action
+      struct stat st = {0};
+      struct tm *t;
+      time_t timeVar;
+      char str_time[100];
+      char log_destination[150];
+      char results_destination[150];
+
 
       // Variables simply used in the algorithm functions, may be redeclared in each function:
       int i, j, k;
@@ -432,9 +481,20 @@ int main(int argc, char **argv)
       // fpData  = fopen("data.txt","r");
       // fpIn  = fopen("param8Dim141201.txt","r");
       // fpData  = fopen("data8Dim141201.txt","r");
-      fpOut = fopen("CA2_results.out","w");
-      fpLog = fopen("CA2_results.log","w");
-
+      if (stat("logs", &st) == -1)
+        mkdir("logs", 0777);
+      timeVar = time(NULL);
+      t = localtime(&timeVar);
+      strftime(str_time, sizeof(str_time), "%H%M%S",t);
+      strcpy(results_destination,"./logs/CA2_results_");
+      strcat(results_destination,str_time);
+      strcat(results_destination,".out");
+      fpOut = fopen(results_destination,"w");
+      strcpy(log_destination,"./logs/CA2_results_");
+      strcat(log_destination,str_time);
+      strcat(log_destination,".log");
+      fpLog = fopen(log_destination,"w");
+      //printf("Output file name: %s", results_destination);
       /* Check for errors opening files */
       if (fpIn == NULL) 
         { fprintf(stderr, "Can't open input file param\n");
@@ -444,14 +504,15 @@ int main(int argc, char **argv)
         { fprintf(stderr, "Can't open data file data\n");
           exit(1);
         }
-      if (fpOut == NULL) 
-        { fprintf(stderr, "Can't open output file results out\n");
-          exit(1);
-        }
       if (fpLog == NULL) 
-        { fprintf(stderr, "Can't open log file\n");
+        { fprintf(stderr, "Can't open log file: %s\n", log_destination);
           exit(1);
         }
+      if (fpOut == NULL) 
+        { fprintf(stderr, "Can't open output file results out: %s\n", results_destination);
+          exit(1);
+        }
+      
 
       /* Read in parameter file */
 
@@ -611,8 +672,11 @@ int main(int argc, char **argv)
 		    // ros::spin();
 
       // if ((nh_.ok())&&(!exitCondition))
+      int NOMINAL_MODE_LAST;
+      NOMINAL_MODE_LAST = 1;
       while (!exitCondition)
         {           
+
         // while ((!exitCondition)&&(nh_.ok()))
              // read the current state from MAVLink (or a file, for now)
               err = readState(currentState, numDims, (double)stepCounter);
@@ -671,9 +735,22 @@ int main(int argc, char **argv)
 
               // write the action to MAVLink (or a file, for now)
               if (intruderThreat(currentState)) 
+              {
                   err = writeCAAction(bestActionInd, currentState, numDims, fpOut); 
+                  if (NOMINAL_MODE_LAST)
+                  {
+                    // We were just in nominal mode, so record the current position as the start of the desired trajectory
+                    xt = xo;
+                    yt = yo;
+                    printf("Setting nominal trajectory start point: %lf %lf\n\n", xt, yt);
+                    NOMINAL_MODE_LAST = 0;
+                  }
+              }
               else
+              {
                   err = writeNominalAction(fpOut);
+                  NOMINAL_MODE_LAST = 1;
+              }
   
               // log the current state and action to a log file
               err = writeLogs(fpLog, stepCounter, currentState, numDims, bestActionInd);
@@ -695,6 +772,8 @@ int main(int argc, char **argv)
                 // ros::spin();
               else
                 exitCondition = 1;
+
+              usleep(1000000*dt);
         }
 
       free(currentState);
