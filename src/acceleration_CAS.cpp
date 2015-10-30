@@ -42,6 +42,8 @@ ros::Subscriber own_vel_sub, intruder_vel_sub;
 ros::Publisher set_pt_vel_pub, set_pt_vel_pub_1, set_pt_vel_pub_2;
 
 //Callback from intruder SLAM pose estimate.
+ros::Publisher setpoint_acceleration, setpoint_acceleration_1; 
+
 
 
 
@@ -206,9 +208,11 @@ void set_velocity_ownship(float vx, float vy, float yaw)
   setpoint_vel_ob.twist.angular.z = yaw;
 
 
-  set_pt_vel_pub.publish(setpoint_vel_ob);
-  set_pt_vel_pub_1.publish(setpoint_vel_ob);
-  set_pt_vel_pub_2.publish(setpoint_vel_ob);
+  // set_pt_vel_pub.publish(setpoint_vel_ob);
+  // set_pt_vel_pub_1.publish(setpoint_vel_ob);
+  // set_pt_vel_pub_2.publish(setpoint_vel_ob);
+
+  // set_acceleration_pub.publish(setpoint_vel);
 
 }
 
@@ -305,6 +309,14 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
           return 1;
       }
 
+  geometry_msgs::Vector3Stamped accel_setpoint; 
+  accel_setpoint.vector.x = ax; 
+  accel_setpoint.vector.y = ay; 
+  accel_setpoint.vector.z = 0; 
+
+  setpoint_acceleration.publish(accel_setpoint);
+  setpoint_acceleration_1.publish(accel_setpoint);
+
   vx_cmd = (currentState[2]+ax*dt);
   vy_cmd = (currentState[3]+ay*dt);
 
@@ -318,7 +330,9 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
   float vx=vx_cmd, vy=vy_cmd;
   float yaw = (2.*M_PI) - ( atan2( currentState[1], currentState[0] ) - (M_PI/4.) );
 
-  set_velocity_ownship( vx, vy, yaw );
+  ///IN THE ACCELERATION MODE, DON'T NEED TO SET VELOCITY. 
+
+  // set_velocity_ownship( vx, vy, yaw );
 
   printf("AVOID U-V-Psi at %s   [ % .4f , % .4f, % .4f ]\nDesired Trajectory: [%lf, %lf]  Command: [%lf, %lf]\n", str_time, vx, vy, yaw, xt, yt, ax, ay);
   printf("Own location = [%lf, %lf], Int. location = [%lf, %lf]\n", xo, yo, xi, yi);
@@ -440,9 +454,12 @@ int main(int argc, char **argv)
       intruder_pose_sub = nh_.subscribe("odroid1/mavros/position/local",1,gps_intruder_pose_callback);
       intruder_vel_sub = nh_.subscribe("odroid1/mavros/global_position/gps_vel",1,gps_intruder_vel_callback);
 
-    	set_pt_vel_pub = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/cmd_vel",1);    
-      set_pt_vel_pub_1 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint_velocity/cmd_vel",1);  
-      set_pt_vel_pub_2 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint/cmd_vel",1);  
+      // set_pt_vel_pub = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/cmd_vel",1);    
+      // set_pt_vel_pub_1 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint_velocity/cmd_vel",1);  
+      // set_pt_vel_pub_2 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint/cmd_vel",1);  
+
+      setpoint_acceleration = nh_.advertise<geometry_msgs::Vector3Stamped>("/mavros/setpoint_accel/accel",1);
+      setpoint_acceleration_1 = nh_.advertise<geometry_msgs::Vector3Stamped>("/mavros/setpoint/accel",1);
 
       FILE *fpIn, *fpData;
       int numVerticies, numElements; 

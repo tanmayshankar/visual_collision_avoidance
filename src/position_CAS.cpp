@@ -32,7 +32,7 @@
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
 
-float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo, xt, yt;   // xt and yt are the absolute locations of the desired trajectory point
+float vyi, vxi, vxo, vyo, vx, vy, xi, yi, xo, yo, xt, yt, zo;   // xt and yt are the absolute locations of the desired trajectory point
 float dt = 0.1; //Based on the frequency of publishing data on the IMU topic.  Was 0.01, seems too fast
 
 //Defining ROS subscribers to retrieve data. 
@@ -41,6 +41,7 @@ ros::Subscriber own_vel_sub, intruder_vel_sub;
 //Defining ROS publisher to publish velocity setpoint data. 
 ros::Publisher set_pt_vel_pub, set_pt_vel_pub_1, set_pt_vel_pub_2;
 
+ros::Publisher setpoint_position_pub;
 //Callback from intruder SLAM pose estimate.
 
 
@@ -145,6 +146,7 @@ void gps_own_pose_callback(const geometry_msgs::PoseStamped::ConstPtr& own_pose_
     geometry_msgs::PoseStamped own_pose = *own_pose_var;
     xo = own_pose.pose.position.x / STATESCALE;
     yo = own_pose.pose.position.y / STATESCALE;
+    zo = own_pose.pose.position.z;
 }
 
 // void gps_own_pose_demo_callback(const geometry_msgs::Vector3::ConstPtr& dummy_pose)
@@ -266,6 +268,7 @@ int readState(double *currentState, int numDims, double timeNow)
 int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
 {   double ax, ay;
     double vx_cmd, vy_cmd;
+    double x_cmd, y_cmd;
     //double dt;
     struct tm *t;
     time_t timeVar;
@@ -308,6 +311,20 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
   vx_cmd = (currentState[2]+ax*dt);
   vy_cmd = (currentState[3]+ay*dt);
 
+  x_cmd = xo + currentState[2]*dt + ax*dt*dt/2; 
+  y_cmd = yo + currentState[3]*dt + ay*dt*dt/2; 
+
+  x_cmd *= STATESCALE;
+  y_cmd *= STATESCALE;
+
+  geometry_msgs::PoseStamped pose_set_pt;
+
+  pose_set_pt.pose.position.x = x_cmd;
+  pose_set_pt.pose.position.y = y_cmd;
+  pose_set_pt.pose.position.z = zo;
+
+  setpoint_position_pub.publish(pose_set_pt);
+
   // Update nominal desired trajectory
   xt += NOMINAL_VX*dt;
   yt += NOMINAL_VY*dt;
@@ -318,7 +335,7 @@ int writeCAAction(int actionInd, double *currentState, int numDims, FILE *fpOut)
   float vx=vx_cmd, vy=vy_cmd;
   float yaw = (2.*M_PI) - ( atan2( currentState[1], currentState[0] ) - (M_PI/4.) );
 
-  set_velocity_ownship( vx, vy, yaw );
+  // set_velocity_ownship( vx, vy, yaw );
 
   printf("AVOID U-V-Psi at %s   [ % .4f , % .4f, % .4f ]\nDesired Trajectory: [%lf, %lf]  Command: [%lf, %lf]\n", str_time, vx, vy, yaw, xt, yt, ax, ay);
   printf("Own location = [%lf, %lf], Int. location = [%lf, %lf]\n", xo, yo, xi, yi);
@@ -440,9 +457,11 @@ int main(int argc, char **argv)
       intruder_pose_sub = nh_.subscribe("odroid1/mavros/position/local",1,gps_intruder_pose_callback);
       intruder_vel_sub = nh_.subscribe("odroid1/mavros/global_position/gps_vel",1,gps_intruder_vel_callback);
 
-    	set_pt_vel_pub = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/cmd_vel",1);    
-      set_pt_vel_pub_1 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint_velocity/cmd_vel",1);  
-      set_pt_vel_pub_2 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint/cmd_vel",1);  
+    	// set_pt_vel_pub = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/cmd_vel",1);    
+     //  set_pt_vel_pub_1 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint_velocity/cmd_vel",1);  
+     //  set_pt_vel_pub_2 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint/cmd_vel",1);  
+
+      setpoint_position_pub = nh_.advertise<geometry_msgs::PoseStamped>("/mavros/setpoint/local_position",1);
 
       FILE *fpIn, *fpData;
       int numVerticies, numElements; 
