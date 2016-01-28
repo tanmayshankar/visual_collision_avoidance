@@ -29,4 +29,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(cas_gps_ros src/cas_gps_ros.cpp src/grid.cpp src/interpolate.cpp)
+rosbuild_add_executable(acceleration_CAS src/acceleration_CAS.cpp src/grid.cpp src/interpolate.cpp)
+rosbuild_add_executable(cas_gps_ros_file src/grid.cpp src/interpolate.cpp src/cas_gps_ros_file.cpp)
+rosbuild_add_executable(position_CAS src/position_CAS.cpp src/grid.cpp src/interpolate.cpp)
+rosbuild_add_executable(new_CAS src/updated_files/new_cas_gps.cpp src/grid.cpp src/interpolate.cpp)
