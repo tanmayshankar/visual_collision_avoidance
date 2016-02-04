@@ -202,17 +202,30 @@ _catkin_empty_exported_target/fast:
 .PHONY : _catkin_empty_exported_target/fast
 
 #=============================================================================
-# Target rules for targets named cas_gps_ros
+# Target rules for targets named acceleration_cas
 
 # Build rule for target.
-cas_gps_ros: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 cas_gps_ros
-.PHONY : cas_gps_ros
+acceleration_cas: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 acceleration_cas
+.PHONY : acceleration_cas
 
 # fast build rule for target.
-cas_gps_ros/fast:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/build
-.PHONY : cas_gps_ros/fast
+acceleration_cas/fast:
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/build
+.PHONY : acceleration_cas/fast
+
+#=============================================================================
+# Target rules for targets named cas_gps_ros_file
+
+# Build rule for target.
+cas_gps_ros_file: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cas_gps_ros_file
+.PHONY : cas_gps_ros_file
+
+# fast build rule for target.
+cas_gps_ros_file/fast:
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/build
+.PHONY : cas_gps_ros_file/fast
 
 #=============================================================================
 # Target rules for targets named clean_test_results
@@ -239,6 +252,32 @@ doxygen: cmake_check_build_system
 doxygen/fast:
 	$(MAKE) -f CMakeFiles/doxygen.dir/build.make CMakeFiles/doxygen.dir/build
 .PHONY : doxygen/fast
+
+#=============================================================================
+# Target rules for targets named new_cas_gps
+
+# Build rule for target.
+new_cas_gps: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 new_cas_gps
+.PHONY : new_cas_gps
+
+# fast build rule for target.
+new_cas_gps/fast:
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/build
+.PHONY : new_cas_gps/fast
+
+#=============================================================================
+# Target rules for targets named position_cas
+
+# Build rule for target.
+position_cas: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 position_cas
+.PHONY : position_cas
+
+# fast build rule for target.
+position_cas/fast:
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/build
+.PHONY : position_cas/fast
 
 #=============================================================================
 # Target rules for targets named rosbuild_clean-test-results
@@ -397,6 +436,19 @@ tests/fast:
 .PHONY : tests/fast
 
 #=============================================================================
+# Target rules for targets named velocity_cas
+
+# Build rule for target.
+velocity_cas: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 velocity_cas
+.PHONY : velocity_cas
+
+# fast build rule for target.
+velocity_cas/fast:
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/build
+.PHONY : velocity_cas/fast
+
+#=============================================================================
 # Target rules for targets named gtest
 
 # Build rule for target.
@@ -422,36 +474,67 @@ gtest_main/fast:
 	$(MAKE) -f gtest/CMakeFiles/gtest_main.dir/build.make gtest/CMakeFiles/gtest_main.dir/build
 .PHONY : gtest_main/fast
 
-src/cas_gps_ros.o: src/cas_gps_ros.cpp.o
-.PHONY : src/cas_gps_ros.o
+src/acceleration_CAS.o: src/acceleration_CAS.cpp.o
+.PHONY : src/acceleration_CAS.o
 
 # target to build an object file
-src/cas_gps_ros.cpp.o:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/cas_gps_ros.cpp.o
-.PHONY : src/cas_gps_ros.cpp.o
+src/acceleration_CAS.cpp.o:
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/acceleration_CAS.cpp.o
+.PHONY : src/acceleration_CAS.cpp.o
 
-src/cas_gps_ros.i: src/cas_gps_ros.cpp.i
-.PHONY : src/cas_gps_ros.i
+src/acceleration_CAS.i: src/acceleration_CAS.cpp.i
+.PHONY : src/acceleration_CAS.i
 
 # target to preprocess a source file
-src/cas_gps_ros.cpp.i:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/cas_gps_ros.cpp.i
-.PHONY : src/cas_gps_ros.cpp.i
+src/acceleration_CAS.cpp.i:
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/acceleration_CAS.cpp.i
+.PHONY : src/acceleration_CAS.cpp.i
 
-src/cas_gps_ros.s: src/cas_gps_ros.cpp.s
-.PHONY : src/cas_gps_ros.s
+src/acceleration_CAS.s: src/acceleration_CAS.cpp.s
+.PHONY : src/acceleration_CAS.s
 
 # target to generate assembly for a file
-src/cas_gps_ros.cpp.s:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/cas_gps_ros.cpp.s
-.PHONY : src/cas_gps_ros.cpp.s
+src/acceleration_CAS.cpp.s:
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/acceleration_CAS.cpp.s
+.PHONY : src/acceleration_CAS.cpp.s
+
+src/cas_gps_ros_file.o: src/cas_gps_ros_file.cpp.o
+.PHONY : src/cas_gps_ros_file.o
+
+# target to build an object file
+src/cas_gps_ros_file.cpp.o:
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/cas_gps_ros_file.cpp.o
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/cas_gps_ros_file.cpp.o
+.PHONY : src/cas_gps_ros_file.cpp.o
+
+src/cas_gps_ros_file.i: src/cas_gps_ros_file.cpp.i
+.PHONY : src/cas_gps_ros_file.i
+
+# target to preprocess a source file
+src/cas_gps_ros_file.cpp.i:
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/cas_gps_ros_file.cpp.i
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/cas_gps_ros_file.cpp.i
+.PHONY : src/cas_gps_ros_file.cpp.i
+
+src/cas_gps_ros_file.s: src/cas_gps_ros_file.cpp.s
+.PHONY : src/cas_gps_ros_file.s
+
+# target to generate assembly for a file
+src/cas_gps_ros_file.cpp.s:
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/cas_gps_ros_file.cpp.s
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/cas_gps_ros_file.cpp.s
+.PHONY : src/cas_gps_ros_file.cpp.s
 
 src/grid.o: src/grid.cpp.o
 .PHONY : src/grid.o
 
 # target to build an object file
 src/grid.cpp.o:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/grid.cpp.o
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/grid.cpp.o
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/grid.cpp.o
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/grid.cpp.o
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/grid.cpp.o
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/grid.cpp.o
 .PHONY : src/grid.cpp.o
 
 src/grid.i: src/grid.cpp.i
@@ -459,7 +542,11 @@ src/grid.i: src/grid.cpp.i
 
 # target to preprocess a source file
 src/grid.cpp.i:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/grid.cpp.i
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/grid.cpp.i
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/grid.cpp.i
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/grid.cpp.i
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/grid.cpp.i
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/grid.cpp.i
 .PHONY : src/grid.cpp.i
 
 src/grid.s: src/grid.cpp.s
@@ -467,7 +554,11 @@ src/grid.s: src/grid.cpp.s
 
 # target to generate assembly for a file
 src/grid.cpp.s:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/grid.cpp.s
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/grid.cpp.s
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/grid.cpp.s
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/grid.cpp.s
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/grid.cpp.s
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/grid.cpp.s
 .PHONY : src/grid.cpp.s
 
 src/interpolate.o: src/interpolate.cpp.o
@@ -475,7 +566,11 @@ src/interpolate.o: src/interpolate.cpp.o
 
 # target to build an object file
 src/interpolate.cpp.o:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/interpolate.cpp.o
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/interpolate.cpp.o
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/interpolate.cpp.o
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/interpolate.cpp.o
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/interpolate.cpp.o
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/interpolate.cpp.o
 .PHONY : src/interpolate.cpp.o
 
 src/interpolate.i: src/interpolate.cpp.i
@@ -483,7 +578,11 @@ src/interpolate.i: src/interpolate.cpp.i
 
 # target to preprocess a source file
 src/interpolate.cpp.i:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/interpolate.cpp.i
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/interpolate.cpp.i
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/interpolate.cpp.i
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/interpolate.cpp.i
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/interpolate.cpp.i
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/interpolate.cpp.i
 .PHONY : src/interpolate.cpp.i
 
 src/interpolate.s: src/interpolate.cpp.s
@@ -491,8 +590,60 @@ src/interpolate.s: src/interpolate.cpp.s
 
 # target to generate assembly for a file
 src/interpolate.cpp.s:
-	$(MAKE) -f CMakeFiles/cas_gps_ros.dir/build.make CMakeFiles/cas_gps_ros.dir/src/interpolate.cpp.s
+	$(MAKE) -f CMakeFiles/acceleration_cas.dir/build.make CMakeFiles/acceleration_cas.dir/src/interpolate.cpp.s
+	$(MAKE) -f CMakeFiles/cas_gps_ros_file.dir/build.make CMakeFiles/cas_gps_ros_file.dir/src/interpolate.cpp.s
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/interpolate.cpp.s
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/interpolate.cpp.s
+	$(MAKE) -f CMakeFiles/velocity_cas.dir/build.make CMakeFiles/velocity_cas.dir/src/interpolate.cpp.s
 .PHONY : src/interpolate.cpp.s
+
+src/position_CAS.o: src/position_CAS.cpp.o
+.PHONY : src/position_CAS.o
+
+# target to build an object file
+src/position_CAS.cpp.o:
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/position_CAS.cpp.o
+.PHONY : src/position_CAS.cpp.o
+
+src/position_CAS.i: src/position_CAS.cpp.i
+.PHONY : src/position_CAS.i
+
+# target to preprocess a source file
+src/position_CAS.cpp.i:
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/position_CAS.cpp.i
+.PHONY : src/position_CAS.cpp.i
+
+src/position_CAS.s: src/position_CAS.cpp.s
+.PHONY : src/position_CAS.s
+
+# target to generate assembly for a file
+src/position_CAS.cpp.s:
+	$(MAKE) -f CMakeFiles/position_cas.dir/build.make CMakeFiles/position_cas.dir/src/position_CAS.cpp.s
+.PHONY : src/position_CAS.cpp.s
+
+src/updated_files/new_cas_gps.o: src/updated_files/new_cas_gps.cpp.o
+.PHONY : src/updated_files/new_cas_gps.o
+
+# target to build an object file
+src/updated_files/new_cas_gps.cpp.o:
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/updated_files/new_cas_gps.cpp.o
+.PHONY : src/updated_files/new_cas_gps.cpp.o
+
+src/updated_files/new_cas_gps.i: src/updated_files/new_cas_gps.cpp.i
+.PHONY : src/updated_files/new_cas_gps.i
+
+# target to preprocess a source file
+src/updated_files/new_cas_gps.cpp.i:
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/updated_files/new_cas_gps.cpp.i
+.PHONY : src/updated_files/new_cas_gps.cpp.i
+
+src/updated_files/new_cas_gps.s: src/updated_files/new_cas_gps.cpp.s
+.PHONY : src/updated_files/new_cas_gps.s
+
+# target to generate assembly for a file
+src/updated_files/new_cas_gps.cpp.s:
+	$(MAKE) -f CMakeFiles/new_cas_gps.dir/build.make CMakeFiles/new_cas_gps.dir/src/updated_files/new_cas_gps.cpp.s
+.PHONY : src/updated_files/new_cas_gps.cpp.s
 
 # Help Target
 help:
@@ -505,7 +656,8 @@ help:
 	@echo "... ROSBUILD_gensrv_cpp"
 	@echo "... ROSBUILD_gensrv_lisp"
 	@echo "... _catkin_empty_exported_target"
-	@echo "... cas_gps_ros"
+	@echo "... acceleration_cas"
+	@echo "... cas_gps_ros_file"
 	@echo "... clean_test_results"
 	@echo "... doxygen"
 	@echo "... edit_cache"
@@ -513,6 +665,8 @@ help:
 	@echo "... install/local"
 	@echo "... install/strip"
 	@echo "... list_install_components"
+	@echo "... new_cas_gps"
+	@echo "... position_cas"
 	@echo "... rebuild_cache"
 	@echo "... rosbuild_clean-test-results"
 	@echo "... rosbuild_precompile"
@@ -526,17 +680,27 @@ help:
 	@echo "... test-results"
 	@echo "... test-results-run"
 	@echo "... tests"
+	@echo "... velocity_cas"
 	@echo "... gtest"
 	@echo "... gtest_main"
-	@echo "... src/cas_gps_ros.o"
-	@echo "... src/cas_gps_ros.i"
-	@echo "... src/cas_gps_ros.s"
+	@echo "... src/acceleration_CAS.o"
+	@echo "... src/acceleration_CAS.i"
+	@echo "... src/acceleration_CAS.s"
+	@echo "... src/cas_gps_ros_file.o"
+	@echo "... src/cas_gps_ros_file.i"
+	@echo "... src/cas_gps_ros_file.s"
 	@echo "... src/grid.o"
 	@echo "... src/grid.i"
 	@echo "... src/grid.s"
 	@echo "... src/interpolate.o"
 	@echo "... src/interpolate.i"
 	@echo "... src/interpolate.s"
+	@echo "... src/position_CAS.o"
+	@echo "... src/position_CAS.i"
+	@echo "... src/position_CAS.s"
+	@echo "... src/updated_files/new_cas_gps.o"
+	@echo "... src/updated_files/new_cas_gps.i"
+	@echo "... src/updated_files/new_cas_gps.s"
 .PHONY : help
 
 
