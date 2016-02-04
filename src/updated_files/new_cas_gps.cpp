@@ -11,7 +11,7 @@
 #define READSTATELOCATION 2   // 0 is a canned state, 1 is from a file, 2 is from MAVLink
 #define EXTRAPMODE 0      // Use 0 for the interpolation function to use nearest neighbor 
                           //  beyond the grid
-#define THREATRANGE 1000    // Range in meters at which an intruder aircraft triggers calls to CA
+#define THREATRANGE 25    // Range in meters at which an intruder aircraft triggers calls to CA
 #define MAXSIMSTEPS 100    // If running in canned sim mode, stop after this number of time steps
 #define SIMSTATERAND 0    // If != 0, returns random states upon calls to readState() (must be in 
                           // READSTATELOCATION==0 mode). For debugging.  Random states are within
