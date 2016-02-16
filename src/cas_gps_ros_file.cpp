@@ -426,10 +426,10 @@ int main(int argc, char **argv)
 		  std::cerr<<"MY god"<<std::endl;
       // ros::nodeHandler
       ros::NodeHandle nh_;
-	    // own_imu_sub = nh_.subscribe("odroid1/mavros/imu/data",1,own_vel_callback);
+	    // own_imu_sub = nh_.subscribe("odroid_1/mavros/imu/data",1,own_vel_callback);
       // own_pose_sub = nh_.subscribe("odometry",1,own_pose_callback);
 	    // own_pose_sub = nh_.subscribe("/demo_odom",1,own_pose_demo_callback);
-      //	own_pose_sub = nh_.subscribe("odroid1/odometry",1,own_pose_callback);
+      //	own_pose_sub = nh_.subscribe("odroid_1/odometry",1,own_pose_callback);
       // intruder_imu_sub = nh_.subscribe("odroid2/mavros/imu/data",1,intruder_vel_callback);
       // intruder_pose_sub = nh_.subscribe("odroid2/odometry",1,intruder_pose_callback);
 
@@ -437,8 +437,8 @@ int main(int argc, char **argv)
       own_pose_sub = nh_.subscribe("mavros/position/local",1,gps_own_pose_callback);
       own_vel_sub = nh_.subscribe("mavros/global_position/gps_vel",1,gps_own_vel_callback);
       // intruder_pose_sub = nh_.subscribe("odroid1/mavros/local_position/local",1,gps_intruder_pose_callback);
-      intruder_pose_sub = nh_.subscribe("odroid1/mavros/position/local",1,gps_intruder_pose_callback);
-      intruder_vel_sub = nh_.subscribe("odroid1/mavros/global_position/gps_vel",1,gps_intruder_vel_callback);
+      intruder_pose_sub = nh_.subscribe("odroid_1/mavros/position/local",1,gps_intruder_pose_callback);
+      intruder_vel_sub = nh_.subscribe("odroid_1/mavros/global_position/gps_vel",1,gps_intruder_vel_callback);
 
     	set_pt_vel_pub = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/cmd_vel",1);    
       set_pt_vel_pub_1 = nh_.advertise<geometry_msgs::TwistStamped>("/mavros/setpoint_velocity/cmd_vel",1);  
