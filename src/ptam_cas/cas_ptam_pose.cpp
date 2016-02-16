@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "interpolate.h"
+// #include <interpolate.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
